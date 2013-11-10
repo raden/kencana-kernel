@@ -516,6 +516,12 @@ static void touch_init_func(struct work_struct *work_init)
 	if (!ts->curr_resume_state) {
 		enable_irq(ts->client->irq);
 		mutex_unlock(&ts->input_dev->mutex);
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+		if (irq_wake) {
+			irq_wake = false;
+			disable_irq_wake(ts->client->irq);
+		}
+#endif
 		return;
 	}
 
@@ -524,7 +530,10 @@ static void touch_init_func(struct work_struct *work_init)
 	enable_irq(ts->client->irq);
 
 #ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
-	enable_irq_wake(ts->client->irq);
+	if (irq_wake) {
+		irq_wake = false;
+		disable_irq_wake(ts->client->irq);
+	}
 #endif
 
 	mutex_unlock(&ts->input_dev->mutex);
@@ -542,9 +551,21 @@ static void touch_recover_func(struct work_struct *work_recover)
 				struct synaptics_ts_data, work_recover);
 
 	disable_irq(ts->client->irq);
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+	if (irq_wake) {
+		irq_wake = false;
+		disable_irq_wake(ts->client->irq);
+	}
+#endif
 	safety_reset(ts);
 	touch_ic_init(ts);
 	enable_irq(ts->client->irq);
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+	if (!irq_wake) {
+		irq_wake = false;
+		enable_irq_wake(ts->client->irq);
+	}
+#endif
 }
 
 /* touch_ic_init
@@ -573,6 +594,12 @@ static int touch_ic_init(struct synaptics_ts_data *ts)
 err_out_retry:
 	ts->ic_init_err_cnt++;
 	disable_irq_nosync(ts->client->irq);
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+	if (irq_wake) {
+		irq_wake = false;
+		disable_irq_wake(ts->client->irq);
+	}
+#endif
 	safety_reset(ts);
 	queue_delayed_work(synaptics_wq, &ts->work_init, msecs_to_jiffies(10));
 
@@ -1419,6 +1446,12 @@ static ssize_t store_ts_reset(struct device *dev,
 	sscanf(buf, "%s", string);
 
 	disable_irq_nosync(ts->client->irq);
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+	if (irq_wake) {
+		irq_wake = false;
+		disable_irq_wake(ts->client->irq);
+	}
+#endif
 
 	cancel_delayed_work_sync(&ts->work_init);
 
@@ -1456,6 +1489,12 @@ static ssize_t store_ts_reset(struct device *dev,
 		touch_ic_init(ts);
 
 	enable_irq(ts->client->irq);
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+	if (!irq_wake) {
+		irq_wake = false;
+		enable_irq_wake(ts->client->irq);
+	}
+#endif
 
 	return count;
 }
@@ -1733,6 +1772,13 @@ static int lcd_notifier_callback(struct notifier_block *this,
 			synaptics_ts_stop(ts);
 			mutex_unlock(&ts->input_dev->mutex);
 		}
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+		scr_suspended = true;
+		if (!irq_wake) {
+			irq_wake = true;
+			enable_irq_wake(ts->client->irq);
+		}
+#endif
 		break;
 	default:
 		break;
