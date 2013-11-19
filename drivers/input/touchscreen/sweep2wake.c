@@ -182,7 +182,15 @@ void detect_sweep2wake(int x, int y, bool st)
 /*
  * INIT / EXIT stuff below here
  */
-
+#ifdef S2W_ANDROID_TOUCH_DECLARED
+extern struct kobject *android_touch_kobj;
+#else
+static struct kobject *android_touch_kobj;
+EXPORT_SYMBOL_GPL(android_touch_kobj);
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+#define DT2W_ANDROID_TOUCH_DECLARED
+#endif
+#endif
 static int __init sweep2wake_init(void)
 {
 	pr_info("[sweep2wake]: %s done\n", __func__);
