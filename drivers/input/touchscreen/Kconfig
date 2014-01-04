@@ -1048,7 +1048,6 @@ config TOUCHSCREEN_PREVENT_SLEEP
 	help
 	  This disables the sleep function of modified touchscreen drivers.
 
-
 config TOUCHSCREEN_DOUBLETAP2WAKE
 	tristate "DoubleTap2Wake for touchscreens"
 	select TOUCHSCREEN_PREVENT_SLEEP
@@ -1059,5 +1058,9 @@ config TOUCHSCREEN_PREVENT_SLEEP
 	default n
 	help
 	  This disables the sleep function of modified touchscreen drivers.
+
+config PWRKEY_SUSPEND
+	tristate "Suspend touch wake if power button pressed"
+	default y
 
 endif
