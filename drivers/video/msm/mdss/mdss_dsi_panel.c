@@ -35,14 +35,11 @@
 #endif
 #endif
 
-<<<<<<< HEAD
-=======
 #include <asm/system_info.h>
 
 #ifdef CONFIG_PWRKEY_SUSPEND
 #include <linux/qpnp/power-on.h>
 #endif
->>>>>>> 7417b8a... s2w/dt2w: Add power key toggle
 #include "mdss_dsi.h"
 
 #define DT_CMD_HDR 6
@@ -258,16 +255,6 @@ void mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			mdss_panel_id == PANEL_LGE_JDI_ORISE_CMD ||
 			mdss_panel_id == PANEL_LGE_JDI_NOVATEK_VIDEO ||
 			mdss_panel_id == PANEL_LGE_JDI_NOVATEK_CMD) {
-<<<<<<< HEAD
-			if (gpio_is_valid(ctrl_pdata->disp_en_gpio))
-				gpio_set_value((ctrl_pdata->disp_en_gpio), 0);
-			usleep(20 * 1000);
-			gpio_set_value((ctrl_pdata->rst_gpio), 0);
-		} else {
-			gpio_set_value((ctrl_pdata->rst_gpio), 0);
-			if (gpio_is_valid(ctrl_pdata->disp_en_gpio))
-				gpio_set_value((ctrl_pdata->disp_en_gpio), 0);
-=======
 #ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
 			if (!prevent_sleep)
 #endif
@@ -286,7 +273,6 @@ void mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 				if (gpio_is_valid(ctrl_pdata->disp_en_gpio))
 					gpio_set_value((ctrl_pdata->disp_en_gpio), 0);
 			}
->>>>>>> 028988c... sweep2wake/doubletap2wake/touchscreen: Prepare for dt2w
 		}
 	}
 }
@@ -396,13 +382,13 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 
 	pr_debug("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
-	if (ctrl->on_cmds.cmd_cnt)
-		mdss_dsi_panel_cmds_send(ctrl, &ctrl->on_cmds);
-
 #ifdef CONFIG_PWRKEY_SUSPEND
 	pwrkey_pressed = false;	
 #endif
 		
+	if (local_pdata->on_cmds.cmd_cnt)
+		mdss_dsi_panel_cmds_send(ctrl, &local_pdata->on_cmds);
+
 	pr_info("%s\n", __func__);
 	return 0;
 }
@@ -442,8 +428,6 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 	if (!gpio_get_value(ctrl->disp_en_gpio))
 		return 0;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
 	if (prevent_sleep) {
 		ctrl->off_cmds.cmds[1].payload[0] = 0x11;
@@ -453,7 +437,6 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 	pr_info("[prevent_touchscreen_sleep]: payload = %x \n", ctrl->off_cmds.cmds[1].payload[0]);
 #endif
 
->>>>>>> 028988c... sweep2wake/doubletap2wake/touchscreen: Prepare for dt2w
 	if (ctrl->off_cmds.cmd_cnt)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->off_cmds);
 
