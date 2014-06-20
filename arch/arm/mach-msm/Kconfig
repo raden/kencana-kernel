@@ -1884,6 +1884,9 @@ config MSM_DEVFREQ_CPUBW
 	select DEVFREQ_GOV_POWERSAVE
 	select DEVFREQ_GOV_USERSPACE
 	select DEVFREQ_GOV_MSM_CPUFREQ
+
+config MSM_CPUFREQ_LIMITER
+	tristate "MSM CPU frequency limiter"
 	default n
 	help
 	  Different devfreq governors use this devfreq device to make CPU to
