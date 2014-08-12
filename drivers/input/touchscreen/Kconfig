@@ -1054,10 +1054,6 @@ config TOUCHSCREEN_SWEEP2WAKE_QPNP_PON
 
 endchoice
 
-config TOUCHSCREEN_PREVENT_SLEEP
-	bool "Inihibit sleep on modified touchscreen drivers"
-	default n
-	help
 
 config TOUCHSCREEN_DOUBLETAP2WAKE
 	tristate "DoubleTap2Wake for touchscreens"
