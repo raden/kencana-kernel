@@ -372,17 +372,8 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 
 	pr_debug("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PWRKEY_SUSPEND
-	pwrkey_pressed = false;	
-#endif
-		
-	if (local_pdata->on_cmds.cmd_cnt)
-		mdss_dsi_panel_cmds_send(ctrl, &local_pdata->on_cmds);
-=======
 	if (ctrl->on_cmds.cmd_cnt)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->on_cmds);
->>>>>>> parent of 37b3674... s2w/dt2w: Add power key toggle
 
 	pr_info("%s\n", __func__);
 	return 0;
